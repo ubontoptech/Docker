@@ -1,6 +1,35 @@
-version: '3' # กำหนด docker version
+version: '3'
+
 services:
-  node-server: # ตั้งชื่อ container (เหมือน --name)
-    build: . # ตำแหน่ง dockerfile
+  frontend:
+    build: ./frontend/vue-crud-app
     ports:
-      - "8000:8000" # map port ออกมา เหมือน -p ใน docker run 
+      - '8080:8080'
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: admin
+      DB_PASSWORD: topza1997
+      DB_NAME: crud_db
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: crud_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: topza1997
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
